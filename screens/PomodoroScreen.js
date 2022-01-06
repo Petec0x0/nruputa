@@ -1,39 +1,18 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 import { AntDesign, Ionicons } from '@expo/vector-icons'; 
 import {vibrate} from '../utils';
 
-const updateTimer = ({ remainingTime, animatedColor }) => {
-    /*
-        The updateTimer function is passed as a child
-        to CountdownCircleTimer every second and returns the reamaing time.    
-    */ 
-    if (remainingTime === 0) {
-        // causes phone to vibrate
-        vibrate();
-        return <Text style={{color: '#fff'}}>Well done...</Text>;
-    }
-    return (
-        <Animated.Text style={{ color: animatedColor, fontSize: 70 }}>
-            {`${Math.floor(remainingTime / 60)}:${remainingTime % 60}`}
-        </Animated.Text>
-    );
-}
 
-export default function PomodoroScreen(props) {
-    const nav = props.navigation;
-    // The useState hook for managing and updating the CountdownCircleTimer props
-    const [countdownTimer, setCountdownTimer] = useState({
-        key: 0,
-        isPlaying: false,
-        duration: (25),
-        onComplete: () => [false, 1000]
-    });
+export default  memo(function PomodoroScreen({navigation, countdownTimer, setCountdownTimer}) {
+    const [buttonText, setButtonText] = useState('START POMODORO');
+    const [message, setMessage] = useState('STAY FOCUSED');
 
+    const nav = navigation;
     return (
         <View style={styles.container}>
-            <View style={{flex: 1, flexDirection: 'row', paddingVertical: 15}}>
+            <View style={styles.iconsContainer}>
                 <View style={{flex:1, alignItems: 'center'}}>
                     <TouchableOpacity
                         onPress={() => {nav.navigate('Settings')}}
@@ -50,7 +29,7 @@ export default function PomodoroScreen(props) {
                 </View>                
             </View>
             <View style={{flex: 1, alignItems: 'center',}}>
-                <Text style={{color: '#fff', fontSize: 20}}>STAY FOCUSED</Text>
+                <Text style={{color: '#fff', fontSize: 20}}>{message}</Text>
             </View>
             <View style={{flex: 5, alignItems: 'center'}}>
                 <CountdownCircleTimer
@@ -58,18 +37,36 @@ export default function PomodoroScreen(props) {
                         isPlaying={countdownTimer.isPlaying}
                         duration={countdownTimer.duration}
                         size={280}
-                        colors={[
-                        ['#004777', 0.4],
-                        ['#F7B801', 0.4],
-                        ['#A30000', 0.2],
-                        ]}
+                        colors="#464343"
+                        trailColor="#068455"
                         onComplete={countdownTimer.onComplete}
                     >
-                    {updateTimer}
+                    {({ remainingTime, animatedColor }) => {
+                        /*
+                            The updateTimer function is passed as a child
+                            to CountdownCircleTimer and called every second and returns the reamaing time.    
+                        */ 
+                        if (remainingTime === 0) {
+                            // causes phone to vibrate
+                            vibrate();
+                            console.log(countdownTimer.isPlaying);
+
+                            // Update the button text and the screen message
+                            setButtonText('TAKE A BREAK');
+                            setMessage('RELAX');
+
+                            return <Text style={{color: '#fff'}}>Well done...</Text>;
+                        }
+                        return (
+                            <Animated.Text style={{ color: '#fff', fontSize: 70 }}>
+                                {`${Math.floor(remainingTime / 60)}:${remainingTime % 60}`}
+                            </Animated.Text>
+                        );
+                    }}
                 </CountdownCircleTimer>
 
                 <TouchableOpacity 
-                    style={styles.startPomodoroBtn}
+                    style={[styles.startPomodoroBtn, {backgroundColor: '#068455',}]}
                     onPress={() => {
                         // Using tenary operator to update and RESET the timer when a user clicks the button
                         (countdownTimer.isPlaying) ? setCountdownTimer({...countdownTimer,
@@ -80,12 +77,12 @@ export default function PomodoroScreen(props) {
                         (!countdownTimer.isPlaying) ? setCountdownTimer({...countdownTimer, isPlaying: !countdownTimer.isPlaying}) : '';
                     }}
                     >
-                    <Text style={{color: '#fff'}}>{!countdownTimer.isPlaying ? 'START POMODORO' : 'RESET'}</Text>
+                    <Text style={{color: '#fff'}}>{!countdownTimer.isPlaying ? buttonText : 'RESET'}</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
-}
+})
 
 
 const styles = StyleSheet.create({
@@ -102,9 +99,12 @@ const styles = StyleSheet.create({
         marginTop: 50,
         paddingHorizontal: 25,
         paddingVertical: 12,
-        backgroundColor: '#A30000',
         borderRadius: 50,
         borderWidth: 1,
-        borderColor: '#CE3907',
+    },
+    iconsContainer: {
+        flex: 1, 
+        flexDirection: 'row', 
+        paddingVertical: 15
     }
   });

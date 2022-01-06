@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
         color: "#fff"
     },
     welcomeButtonView: {
-        backgroundColor: "#CE3907", 
+        backgroundColor: "#068455", 
         borderRadius:100,
         borderWidth: 1,
-        borderColor: '#CE0315',
+        borderColor: '#068455',
         overflow: "hidden"
     }
   });
