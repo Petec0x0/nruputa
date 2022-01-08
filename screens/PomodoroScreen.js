@@ -1,11 +1,12 @@
-import React, { memo, useState } from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 import { AntDesign, Ionicons } from '@expo/vector-icons'; 
 import {vibrate} from '../utils';
+import { resetTimer } from '../actions';
 
-
-export default  memo(function PomodoroScreen({navigation, countdownTimer, setCountdownTimer}) {
+const PomodoroScreen = ({navigation, appState, updateTimer}) => {
     const [buttonText, setButtonText] = useState('START POMODORO');
     const [message, setMessage] = useState('STAY FOCUSED');
 
@@ -33,13 +34,13 @@ export default  memo(function PomodoroScreen({navigation, countdownTimer, setCou
             </View>
             <View style={{flex: 5, alignItems: 'center'}}>
                 <CountdownCircleTimer
-                        key={countdownTimer.key}
-                        isPlaying={countdownTimer.isPlaying}
-                        duration={countdownTimer.duration}
+                        key={appState.countdownTimer.key}
+                        isPlaying={appState.countdownTimer.isPlaying}
+                        duration={appState.countdownTimer.duration}
                         size={280}
                         colors="#464343"
                         trailColor="#068455"
-                        onComplete={countdownTimer.onComplete}
+                        onComplete={appState.countdownTimer.onComplete}
                     >
                     {({ remainingTime, animatedColor }) => {
                         /*
@@ -49,11 +50,11 @@ export default  memo(function PomodoroScreen({navigation, countdownTimer, setCou
                         if (remainingTime === 0) {
                             // causes phone to vibrate
                             vibrate();
-                            console.log(countdownTimer.isPlaying);
+                            console.log(appState.countdownTimer.isPlaying);
 
                             // Update the button text and the screen message
-                            setButtonText('TAKE A BREAK');
-                            setMessage('RELAX');
+                            // setButtonText('TAKE A BREAK');
+                            // setMessage('RELAX');
 
                             return <Text style={{color: '#fff'}}>Well done...</Text>;
                         }
@@ -68,21 +69,30 @@ export default  memo(function PomodoroScreen({navigation, countdownTimer, setCou
                 <TouchableOpacity 
                     style={[styles.startPomodoroBtn, {backgroundColor: '#068455',}]}
                     onPress={() => {
-                        // Using tenary operator to update and RESET the timer when a user clicks the button
-                        (countdownTimer.isPlaying) ? setCountdownTimer({...countdownTimer,
-                            isPlaying: !countdownTimer.isPlaying, 
-                            key: countdownTimer.key + 1,
-                        }) : '';
-                        // Start the timer if it is not playing already
-                        (!countdownTimer.isPlaying) ? setCountdownTimer({...countdownTimer, isPlaying: !countdownTimer.isPlaying}) : '';
+                        console.log(appState);
+                        updateTimer({...appState.countdownTimer})
+                        // // Using tenary operator to update and RESET the timer when a user clicks the button
+                        // (appState.countdownTimer.isPlaying) ? updateTimer({...appState.countdownTimer}) : '';
+                        // // Start the timer if it is not playing already
+                        // (!appState.countdownTimer.isPlaying) ? updateTimer({...appState.countdownTimer}) : '';
                     }}
                     >
-                    <Text style={{color: '#fff'}}>{!countdownTimer.isPlaying ? buttonText : 'RESET'}</Text>
+                    <Text style={{color: '#fff'}}>{!appState.countdownTimer.isPlaying ? buttonText : 'RESET'}</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
+}
+
+const mapStateToProps = (state) => ({
+    appState: state
 })
+
+const mapDispatchToProps = (dispatch) => ({
+    updateTimer: (countdownTimer) => dispatch(resetTimer(countdownTimer)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(PomodoroScreen);
 
 
 const styles = StyleSheet.create({
