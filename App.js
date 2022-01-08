@@ -9,7 +9,7 @@ import SplashScreen from './screens/SplashScreen';
 import PomodoroScreen from './screens/PomodoroScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import StaticticsScreen from './screens/StaticticsScreen';
-import reducer from './reducers/reducer';
+import reducer from './redux/reducers/reducer';
 
 // create store "redux" for state management
 const store = createStore(reducer);
@@ -37,19 +37,9 @@ export default function App() {
         <Provider store={store}>
           <NavigationContainer>
             <Stack.Navigator>
-              <Stack.Screen options={{headerShown: false}} name="Pomodoro">
-                {props => <PomodoroScreen {...props} 
-                            countdownTimer={countdownTimer} 
-                            setCountdownTimer={setCountdownTimer}
-                          />
-                }
-              </Stack.Screen>
-              <Stack.Screen name="Settings">
-                {props => <SettingsScreen {...props} countdownTimer={countdownTimer} setCountdownTimer={setCountdownTimer} />}
-              </Stack.Screen>
-              <Stack.Screen name="Statistics">
-                {props => <StaticticsScreen {...props} countdownTimer={countdownTimer} setCountdownTimer={setCountdownTimer} />}
-              </Stack.Screen>
+              <Stack.Screen options={{headerShown: false}} name="Pomodoro"  component={PomodoroScreen} />
+              <Stack.Screen name="Settings" component={SettingsScreen} />
+              <Stack.Screen name="Statistics" component={StaticticsScreen} />
             </Stack.Navigator>
           </NavigationContainer>
         </Provider>
