@@ -1,11 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Vibration } from 'react-native';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-import {vibrate} from '../utils';
 import { resetTimer, switchSession } from '../redux/actions';
 import NavigationIcons from '../components/NavigationIcons';
 import Message from '../components/Message';
+
+const ONE_SECOND_IN_MS = 1000;
+
+  const PATTERN = [
+    1 * ONE_SECOND_IN_MS,
+    2 * ONE_SECOND_IN_MS,
+    3 * ONE_SECOND_IN_MS
+  ];
 
 const returnRemainingTime = ({ remainingTime }) => {
     /*
@@ -14,7 +21,7 @@ const returnRemainingTime = ({ remainingTime }) => {
     */ 
     if (remainingTime === 0) {
         // causes phone to vibrate
-        vibrate();
+        Vibration.vibrate(PATTERN);
         return <Text style={{color: '#fff'}}>Well done...</Text>;
     }
     return (
@@ -53,7 +60,9 @@ const PomodoroScreen = ({appState, updateTimer, switchSession}) => {
                         updateTimer({...appState.countdownTimer})
                     }}
                     >
-                    <Text style={{color: '#fff'}}>{!appState.countdownTimer.isPlaying ? appState.buttonText : 'RESET'}</Text>
+                    <Text style={{color: '#fff', fontWeight: 'bold'}}>
+                        {!appState.countdownTimer.isPlaying ? appState.buttonText : 'RESET'}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>

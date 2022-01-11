@@ -2,10 +2,15 @@
 
 export const resetTimer = (countdownTimer) => ({
     type: 'UPDATE_TIMER',
-    countdownTimer,
+    countdownTimer
 });
 
 export const switchSession = (data) => ({
     type: 'SWITCH_SESSION',
-    data,
+    data
+})
+
+export const updateSettings = (keyValuePair) => ({
+    type: 'UPDATE_SETTINGS',
+    payload: keyValuePair
 })

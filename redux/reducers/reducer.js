@@ -1,15 +1,15 @@
 const initialState = {
     settings: {
-        pomodoroTime: (25*60),
-        breakTime: (5*50),
+        pomodoroTime: (25),
+        breakTime: (5),
         longBreak: true,
-        longBreakLength: (20*60),
+        longBreakLength: (20),
         longBreakAfter: 4
     },
     countdownTimer: {
         key: 0,
         isPlaying: false,
-        duration: (10),
+        duration: (25),
     },
     buttonText: 'START POMODORO',
     message: 'STAY FOCUSED',
@@ -70,6 +70,28 @@ const appReducer  = (state = initialState, action) => {
                     longBreakAfter: (state.settings.longBreakAfter < 0) ? 4 : state.settings.longBreakAfter
                 }
 
+            }
+        case 'UPDATE_SETTINGS':
+            if("pomodoroTime" in {...action.payload}){
+                return {
+                    ...state,
+                    settings: {
+                        ...state.settings,
+                        ...action.payload 
+                    },
+                    countdownTimer: {
+                        ...state.countdownTimer,
+                        key: state.countdownTimer.key + 1,
+                        duration: action.payload.pomodoroTime
+                    }
+                }
+            }
+            return {
+                ...state,
+                settings: {
+                    ...state.settings,
+                    ...action.payload
+                }
             }
     
         default:

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useState } from 'react'
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -15,13 +15,6 @@ import reducer from './redux/reducers/reducer';
 const store = createStore(reducer);
 
 export default function App() {
-  // The useState hook for managing and updating the CountdownCircleTimer props
-  const [countdownTimer, setCountdownTimer] = useState({
-      key: 0,
-      isPlaying: false,
-      duration: (25),
-      onComplete: () => [false, 1000]
-  });
 
   // create a state to check if the spash screen has been launched
   const [splashed, setSplashed] = useState(true);
@@ -36,16 +29,23 @@ export default function App() {
       {!splashed && 
         <Provider store={store}>
           <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator screenOptions={{
+                  headerStyle:{
+                    backgroundColor: '#000',
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerTitleAlign: 'center'
+                }} >
               <Stack.Screen options={{headerShown: false}} name="Pomodoro"  component={PomodoroScreen} />
-              <Stack.Screen name="Settings" component={SettingsScreen} />
+              <Stack.Screen name="Settings" component={SettingsScreen}/>
               <Stack.Screen name="Statistics" component={StaticticsScreen} />
             </Stack.Navigator>
           </NavigationContainer>
         </Provider>
       }
-      
-      
     </>
   );
 }
