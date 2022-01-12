@@ -5,7 +5,8 @@ import { persistStore, persistReducer } from 'redux-persist'
 
 const persistConfig = {
     key: 'root',
-    storage: AsyncStorage
+    storage: AsyncStorage,
+    whitelist: ['settings']
 }
 
 const persistedReducer = persistReducer(persistConfig, appReducer)
