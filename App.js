@@ -21,7 +21,7 @@ export default function App() {
 
   return (
     <>
-      <StatusBar style="auto" />
+      {/* <StatusBar style="auto" /> */}
       {/* Show a splash screen on the app launch */}
       {splashed && <SplashScreen setSplashed={setSplashed} />}
       {!splashed && 

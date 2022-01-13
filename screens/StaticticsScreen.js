@@ -15,7 +15,8 @@ export default StaticticsScreen = () => {
             screenOptions={{
                 tabBarActiveTintColor: '#fff',
                 tabBarLabelStyle: {
-                     fontSize: 12, 
+                     fontSize: 12,
+                     fontWeight: 'bold' 
                 },
                 tabBarStyle: { 
                     backgroundColor: '#404040',
