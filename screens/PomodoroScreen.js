@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Vibration } from 'react-native';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-import { resetTimer, switchSession } from '../redux/actions';
+import { resetTimer, switchSession, updateDurationFromStorage } from '../redux/actions';
 import NavigationIcons from '../components/NavigationIcons';
 import Message from '../components/Message';
 
@@ -31,7 +31,11 @@ const returnRemainingTime = ({ remainingTime }) => {
     );
 }
 
-const PomodoroScreen = ({appState, updateTimer, switchSession}) => {
+const PomodoroScreen = ({appState, updateTimer, switchSession, updateDurationFromStorage}) => {
+    useEffect(() => {
+        updateDurationFromStorage(appState.settings.pomodoroTime);
+        // console.log(appState);
+    }, [])
     return (
         <View style={styles.container}>
             <NavigationIcons />
@@ -46,8 +50,8 @@ const PomodoroScreen = ({appState, updateTimer, switchSession}) => {
                         colors="#464343"
                         trailColor="#068455"
                         onComplete={() => {
-                            updateTimer({...appState.countdownTimer});
-                            switchSession({});
+                            updateTimer();
+                            switchSession();
                             return [false, 1000];
                         }}
                     >
@@ -57,7 +61,7 @@ const PomodoroScreen = ({appState, updateTimer, switchSession}) => {
                 <TouchableOpacity 
                     style={styles.startPomodoroBtn}
                     onPress={() => {
-                        updateTimer({...appState.countdownTimer})
+                        updateTimer()
                     }}
                     >
                     <Text style={{color: '#fff', fontWeight: 'bold'}}>
@@ -74,8 +78,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    updateTimer: (countdownTimer) => dispatch(resetTimer(countdownTimer)),
-    switchSession: (data) => dispatch(switchSession(data)),
+    updateTimer: () => dispatch(resetTimer()),
+    switchSession: () => dispatch(switchSession()),
+    updateDurationFromStorage: (duration) => dispatch(updateDurationFromStorage(duration))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PomodoroScreen);
