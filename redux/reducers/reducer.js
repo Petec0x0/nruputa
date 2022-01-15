@@ -16,7 +16,7 @@ const initialState = {
     countdownTimer: {
         key: 0,
         isPlaying: false,
-        duration: (25),
+        duration: (25*60),
         sessionCount: 4
     },
     // buttonText for storing the title displayed 
@@ -72,18 +72,18 @@ const appReducer  = (state = initialState, action) => {
                     isOnWorkingSession: false,
                     countdownTimer: {
                         ...state.countdownTimer,
-                        key: state.countdownTimer.key + 1,
-                        duration: (state.countdownTimer.sessionCount) ? state.settings.breakTime : state.settings.longBreakLength,
                         // update the sessionCount to know when to switch to long break
-                        sessionCount: state.countdownTimer.sessionCount - 1
+                        sessionCount: state.countdownTimer.sessionCount - 1,
+                        key: state.countdownTimer.key + 1,
+                        duration: !(state.countdownTimer.sessionCount == 1) ? state.settings.breakTime*60 : state.settings.longBreakLength*60
                     },
                     // update the usage statistics
                     statistics: {
                         ...state.statistics,
                         [today]: {
                             ...state.statistics[today],
-                            pomodoros: (state.statistics[today].pomodoros) ? state.statistics[today].pomodoros + 1 : 1,
-                            // update the long break if it is time for one
+                            pomodoros: (state.statistics[today] && state.statistics[today].pomodoros) ? 
+                                        state.statistics[today].pomodoros + 1 : 1,
                         }
                     }
                 }
@@ -97,17 +97,23 @@ const appReducer  = (state = initialState, action) => {
                 countdownTimer: {
                     ...state.countdownTimer,
                     key: state.countdownTimer.key + 1,
-                    duration: state.settings.pomodoroTime,
+                    duration: state.settings.pomodoroTime*60,
                     // Update the 'sessionCount' with the value of 
                     // 'longBreakAfter' from the settings if it turns to zero
-                    sessionCount: (state.countdownTimer.sessionCount < 0) ? state.settings.longBreakAfter : state.countdownTimer.sessionCount
+                    sessionCount: (state.countdownTimer.sessionCount == 1) ? 
+                                    state.settings.longBreakAfter : state.countdownTimer.sessionCount
                 },
                 // update the usage statistics
                 statistics: {
                     ...state.statistics,
                     [today]: {
                         ...state.statistics[today],
-                        shortBreaks: (state.statistics[today].shortBreaks) ? state.statistics[today].shortBreaks + 1 : 1
+                        shortBreaks: (state.statistics[today] && state.statistics[today].shortBreaks) ? 
+                                        state.statistics[today].shortBreaks + 1 : 1,
+                        // update the long break if it is time for one
+                        longBreaks: ((state.countdownTimer.sessionCount < 1) && 
+                                        (state.statistics[today] && state.statistics[today].longBreaks)) ? 
+                                            state.statistics[today].longBreaks + 1 : 0
                     }
                 }
 
@@ -120,7 +126,7 @@ const appReducer  = (state = initialState, action) => {
                 countdownTimer: {
                     ...state.countdownTimer,
                     key: state.countdownTimer.key + 1,
-                    duration: action.payload,
+                    duration: action.payload*60,
                     sessionCount: state.settings.longBreakAfter
                 }
 
@@ -128,7 +134,7 @@ const appReducer  = (state = initialState, action) => {
         case 'UPDATE_SETTINGS':
             // Update the settings state when 'UPDATE_SETTINGS' is 
             // dispatched with the values passed as payload
-            if("pomodoroTime" in {...action.payload}){
+            if('pomodoroTime' in {...action.payload}){
                 return {
                     ...state,
                     settings: {
@@ -140,7 +146,21 @@ const appReducer  = (state = initialState, action) => {
                     countdownTimer: {
                         ...state.countdownTimer,
                         key: state.countdownTimer.key + 1,
-                        duration: action.payload.pomodoroTime
+                        duration: action.payload.pomodoroTime*60
+                    }
+                }
+            }else if('longBreakAfter' in {...action.payload}){
+                return {
+                    ...state,
+                    settings: {
+                        ...state.settings,
+                        ...action.payload 
+                    },
+                    // The sessionCount state should be updated too
+                    // if the settings includes longBreakAfter
+                    countdownTimer: {
+                        ...state.countdownTimer,
+                        sessionCount: action.payload.longBreakAfter
                     }
                 }
             }

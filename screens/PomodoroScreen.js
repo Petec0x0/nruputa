@@ -34,7 +34,6 @@ const returnRemainingTime = ({ remainingTime }) => {
 const PomodoroScreen = ({appState, updateTimer, switchSession, updateDurationFromStorage}) => {
     useEffect(() => {
         updateDurationFromStorage(appState.settings.pomodoroTime);
-        // console.log(appState);
     }, [])
     return (
         <View style={styles.container}>

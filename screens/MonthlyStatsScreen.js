@@ -1,17 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
+import { useSelector } from 'react-redux';
+import { LineChart } from 'react-native-chart-kit';
 import RowHeader from '../components/RowHeader';
 
 const screenWidth = Dimensions.get("window").width;
-const data = {
-    labels: ["wk1", "wk2", "wk3", "wk4"],
-    datasets: [
-      {
-        data: [30, 25, 28, 50]
-      }
-    ]
-  };
+
+const lastOneMonthData = (statistics) => {
+  // Get statistics object keys
+  const one_month_string = Object.keys(statistics).slice(-30);
+  const lastOneMonthPomodoro = one_month_string.map(day_string => {
+    return statistics[day_string].pomodoros;
+  });
+  // return data
+  return {labels: [], datasets: [{data: lastOneMonthPomodoro}]}
+}
 
 const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -25,19 +28,23 @@ const chartConfig = {
   };
 
 export default MonthlyStatsScreen = () => {
+    // Get statistics data from state
+  const statistics = useSelector((state) => state.statistics);
+  const data = lastOneMonthData(statistics);
+
     return (
         <View style={styles.container}>
             <RowHeader text="JANUARY 2022" />
             <View style={{backgroundColor: '#404040', paddingHorizontal: 10, paddingVertical: 10}}>
                 <Text style={{alignSelf: 'center', color: '#cfcccc', marginBottom: 10, fontWeight: 'bold'}}>FOCUS SESSIONS</Text>
-                <BarChart
+                <LineChart
                     style={{}}
                     data={data}
                     width={screenWidth-20}
                     height={220}
                     chartConfig={chartConfig}
                     verticalLabelRotation={30}
-                    fromZero={true}
+                    bezier
                 />
             </View>
         </View>
